@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { SharedModule } from '../shared/shared.module';
 import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard.component';
 
@@ -10,7 +11,10 @@ const dashboardRoutes: Routes = [
   declarations: [
     DashboardComponent
   ],
-  imports: [ RouterModule.forChild(dashboardRoutes) ],
+  imports: [ 
+    SharedModule,
+    RouterModule.forChild(dashboardRoutes) 
+  ],
   exports: [ RouterModule ]
 })
 export class DashboardModule {}

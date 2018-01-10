@@ -1,14 +1,15 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'dashboard', loadChildren: 'app/dashboard/dashboard.module#DashboardModule'}
+  { path: 'dashboard', loadChildren: 'app/dashboard/dashboard.module#DashboardModule'},
+  { path: 'rxjs', loadChildren: 'app/rxjs/rxjs.module#RxjsModule'}
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {preloadingStrategy: PreloadAllModules})],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
