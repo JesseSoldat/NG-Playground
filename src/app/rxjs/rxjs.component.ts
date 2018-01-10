@@ -2,8 +2,6 @@ import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angula
 import { Observable } from 'rxjs/Observable';
 import { createSubscriber } from '../shared/helper-functions';
 
-
-
 @Component({
   selector: 'app-rxjs',
   templateUrl: './rxjs.component.html',
@@ -15,12 +13,20 @@ export class RxjsComponent implements OnInit, AfterViewInit {
   interval$: Observable<any>;
   of$: Observable<any>;
   from$: Observable<any>;
+  range$: Observable<any>;
+  published$: Observable<any>;
+  merged$: Observable<any>;
+  concated$: Observable<any>;
 
   constructor() { }
 
   ngOnInit() {
     // this.createInterval();
-    this.createOfFrom();
+    // this.createOfFrom();
+    // this.createRange();
+    // this.createPublished();
+    // this.createMerged();
+    // this.createConcated();
   }
 
   ngAfterViewInit() {
@@ -37,6 +43,18 @@ export class RxjsComponent implements OnInit, AfterViewInit {
     }, err => console.log(err)
       , () => console.log('complete') 
     )
+  }
+
+  createRange() {
+    this.range$ = Observable.range(5, 55)
+      .startWith(-5)
+      .filter(num => num % 5 === 0)
+      .map(num => { 
+        let divided = num / 5;
+        return `${num} / 5 = ${divided}`;
+      });
+
+    this.range$.subscribe(num => console.log(num));
   }
 
   createInterval() {
@@ -76,6 +94,57 @@ export class RxjsComponent implements OnInit, AfterViewInit {
         resolve({title, items})
       }, 3000);
     });   
+  }
+
+  createPublished() {
+    this.published$ = Observable.interval(1000)
+      .skip(1)
+      .publishReplay(2).refCount()
+      .take(15)
+      .finally(() => console.log('All done here!'));
+
+    let sub1 = this.published$.subscribe(num => {
+      console.log('Started publishing', num);  
+      setTimeout(() => {
+        sub1.unsubscribe();
+      }, 5000); 
+    });
+
+    setTimeout(() => {
+      this.published$.subscribe(num => {
+        console.log('Delayed 5 seconds', num);
+
+        setTimeout(() => {
+          sub1.unsubscribe();
+        }, 3000) 
+      });
+    }, 5000);
+  }
+
+  createMerged() {
+    // this.merged$ = Observable.interval(1000)
+    //   .take(10)
+    //   .merge(Observable.of(['A', 'B', 'C', 'D', 'E']))
+    //   .merge(Observable.from(['A', 'B', 'C', 'D', 'E']));
+
+    //7 total
+    this.merged$ = Observable.merge(
+      Observable.interval(1000).map(i => `${i} seconds`),
+      Observable.interval(500).map(i => `${i} half seconds`)
+    )
+    .take(7)
+    .finally(() => console.log('All done here!'));
+      
+    this.merged$.subscribe(data => console.log(data));
+  }
+
+  createConcated() {
+    this.concated$ = Observable.concat(
+      Observable.interval(1000).map(i => `${i} seconds`).take(3),
+      Observable.interval(500).map(i => `${i} half seconds`).take(3)
+    );
+
+    this.concated$.subscribe(data => console.log(data));
   }
 
 
