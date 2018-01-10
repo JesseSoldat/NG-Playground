@@ -1,0 +1,29 @@
+.dragable {
+    transition: background 250ms;
+    background: #aaa;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    cursor: move;
+    border: 5px solid #444;
+    top: 0;
+    left: 0;
+}
+
+.dragable.dragging {
+    background: #555;
+    pointer-events: none;
+}
+
+.drop-area {
+    transition: background 250ms;
+    padding: 10px;
+    background: #007acc;
+    margin: 10px 0;
+    color: #fff;
+}
+
+.drop-area.dropped {
+    background: #fee200;
+    color: #000;
+}
