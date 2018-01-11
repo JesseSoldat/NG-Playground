@@ -5,7 +5,8 @@ import { HomeComponent } from './home/home.component';
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'dashboard', loadChildren: 'app/dashboard/dashboard.module#DashboardModule'},
-  { path: 'rxjs', loadChildren: 'app/rxjs/rxjs.module#RxjsModule'}
+  { path: 'rxjs', loadChildren: 'app/rxjs/rxjs.module#RxjsModule'},
+  { path: 'exercises', loadChildren: 'app/exercises/exercises.module#ExercisesModule'}
 ];
 
 @NgModule({

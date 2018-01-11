@@ -1,7 +1,26 @@
-export const createSubscriber = (tag) => {
-  return {
-    'next': item => console.log(`${tag}.next: ${item}`),
-    'error': err => console.log(`${tag}.err: ${err.stack || err}`),
-    'complete': () => console.log(`${tag}.complete`) 
+export function cleanStringSort(string) {
+  let cleaned = this.cleanString(string);
+  return cleaned
+          .split('')
+          .sort()
+          .join('');
+}
+
+export function cleanString(string) {
+  return string
+    //take out spaces and symbols | leaves letters and numbers
+    .replace(/[^\w]/g, '')
+    .toLowerCase()
+}
+
+export function logger(result) {
+  console.log(result);
+}
+
+export function buildCharMap(str) {
+  const charMap = {};
+  for (let char of cleanString(str)) {
+    charMap[char] = charMap[char] + 1 || 1;
   }
+  return charMap;
 }

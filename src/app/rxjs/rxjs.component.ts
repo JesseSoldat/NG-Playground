@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { createSubscriber } from '../shared/helper-functions';
+
+declare let jQuery: any;
 
 @Component({
   selector: 'app-rxjs',
@@ -10,6 +11,19 @@ import { createSubscriber } from '../shared/helper-functions';
 export class RxjsComponent implements OnInit, AfterViewInit {
   @ViewChild('inputBox') inputBox: ElementRef;
   keyUps$: Observable<any>;
+  
+  $drag;
+  $dropArea;
+  $doc;
+
+  drop$: Observable<any>;
+  beginDrag$: Observable<any>;
+  endDrag$: Observable<any>;
+  mouseMove$: Observable<any>;
+  // currentOverArea$: Observable<any>;
+  currentOverArea$;
+  
+
   interval$: Observable<any>;
   of$: Observable<any>;
   from$: Observable<any>;
@@ -30,6 +44,11 @@ export class RxjsComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    this.setUpKeyupEvent();
+    this.setUpDragEvent();
+  }
+
+  setUpKeyupEvent() {
     this.keyUps$ = Observable.fromEvent(this.inputBox.nativeElement, 'keyup')
       .map((e: any) => e.target.value)
       // .do(value => console.log(value))
@@ -39,10 +58,69 @@ export class RxjsComponent implements OnInit, AfterViewInit {
 
     this.keyUps$.subscribe(results => {
       console.log(results);
-      
+
     }, err => console.log(err)
-      , () => console.log('complete') 
+      , () => console.log('complete')
     )
+  }
+
+  setUpDragEvent() {
+    this.$drag = jQuery('#drag');
+    this.$dropArea = jQuery('.drop-area');
+    this.$doc = jQuery(document);
+    // console.log('$doc', this.$doc);
+    this.beginDrag$ = Observable.fromEvent(this.$drag, 'mousedown');
+    this.endDrag$ = Observable.fromEvent(this.$doc, 'mouseup')
+    this.mouseMove$ = Observable.fromEvent(this.$doc, 'mousemove');
+
+    this.drop$ = this.beginDrag$
+      .do(e => {
+        e.preventDefault();
+        this.$drag.addClass('dragging');
+      })
+      .mergeMap(startEvent => {
+        return this.mouseMove$
+          .takeUntil(this.endDrag$)
+          .do(moveEvent => {
+            this.moveDrag(startEvent, moveEvent);
+          })
+          //no data will be sent to drop$.subscribe until endDrag$ event fires
+          .last()
+          .do((x) => {
+            // console.log('return to original spot', x);
+            this.$drag.removeClass('dragging')
+              .stop()
+              .animate({
+                'top': 0,
+                'left': 0
+              }, 500);
+          })
+          .withLatestFrom(this.currentOverArea$, (event, $area) => $area)
+      })
+      
+   
+      this.drop$.subscribe($area => {
+        console.log($area);
+        this.$dropArea.removeClass('dropped');
+        if ($area) {
+          $area.addClass('dropped');
+        }
+      })
+
+    this.currentOverArea$ = Observable.merge(
+      Observable.fromEvent(this.$dropArea, 'mouseenter')
+        .map((e: any) => jQuery(e.target)),
+      Observable.fromEvent(this.$dropArea, 'mouseleave')
+        .map((e: any) => null)
+    ); 
+  }
+    
+  moveDrag(startEvent, moveEvent) {
+    // console.log(moveEvent);
+    this.$drag.css({
+      left: moveEvent.clientX - startEvent.offsetX,
+      top: moveEvent.clientY - startEvent.offsetY
+    });
   }
 
   createRange() {

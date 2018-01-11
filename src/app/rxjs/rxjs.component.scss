@@ -1,3 +1,7 @@
+
+#dragContainer {
+  position: relative;
+}
 .dragable {
     transition: background 250ms;
     background: #aaa;
@@ -8,6 +12,7 @@
     border: 5px solid #444;
     top: 0;
     left: 0;
+    z-index: 10000;
 }
 
 .dragable.dragging {
@@ -15,11 +20,18 @@
     pointer-events: none;
 }
 
+ div#drag.dragable.dragging {
+    pointer-events: none;
+}
+
 .drop-area {
     transition: background 250ms;
     padding: 10px;
+    font-size: 35px;
     background: #007acc;
-    margin: 10px 0;
+    margin: 30px 0;
+    width: 100%;
+    display: block;
     color: #fff;
 }
 

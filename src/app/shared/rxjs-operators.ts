@@ -22,3 +22,7 @@ import 'rxjs/add/operator/finally';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/merge';
 import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/operator/takeUntil';
+import 'rxjs/add/operator/last';
+import 'rxjs/add/operator/withLatestFrom';
+
